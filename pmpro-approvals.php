@@ -1500,13 +1500,7 @@ style="display: none;"<?php } ?>>
 	 */
 	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
 		global $wpdb;
-		$sql_parts['JOIN'] .= "LEFT JOIN {$wpdb->usermeta} umm
-		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
-		  AND umm.meta_key != 'pmpro_approval_log'
-		  AND u.ID = umm.user_id ";
-
-		$sql_parts['WHERE'] .= "AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL ) ";
-
+		$sql_parts['WHERE'] .= "AND (SELECT COUNT(*) FROM {$wpdb->usermeta} umm WHERE umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id) AND u.ID = umm.user_id AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL )) > 0 ";
 		return $sql_parts;
 	}
 
